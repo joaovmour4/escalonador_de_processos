@@ -10,17 +10,18 @@ Processo novo_processo(int prioridade, int tempo, char tipo[1]);
 
 void main(){
 	int i, j, tamanho=5, aux=0, prioridade, estouro=0;
-	Processo fila[5];
+	Processo fila[6];
 	
 	fila[0] = novo_processo(1, 4, "C");
 	fila[1] = novo_processo(2, 6, "I");
 	fila[2] = novo_processo(1, 4, "C");
 	fila[3] = novo_processo(3, 6, "C");
 	fila[4] = novo_processo(2, 6, "I");
+	fila[5] = novo_processo(4, 8, "I");
 	
-	while(estouro != 5){
+	while(estouro != 6){
 		prioridade = 0;
-		for(j=0; j<5; j++){
+		for(j=0; j<6; j++){
 			if(fila[j].prioridade > prioridade && fila[j].tempo != 0 && aux != j){
 				aux = j;
 				prioridade = fila[aux].prioridade;
