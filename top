@@ -1,0 +1,65 @@
+[1mdiff --git a/escalonador.c b/escalonador.c[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6937d3f[m
+[1m--- /dev/null[m
+[1m+++ b/escalonador.c[m
+[36m@@ -0,0 +1,59 @@[m
+[32m+[m[32m#include <stdio.h>[m
+[32m+[m
+[32m+[m[32mtypedef struct {[m
+[32m+[m	[32mint prioridade;[m
+[32m+[m	[32mint tempo; // Tempo de execucao[m
+[32m+[m	[32mchar tipo[1]; // C = CPU / I = I/O[m
+[32m+[m[32m}Processo;[m
+[32m+[m
+[32m+[m[32mProcesso novo_processo(int prioridade, int tempo, char tipo[1]);[m
+[32m+[m
+[32m+[m[32mvoid main(){[m
+[32m+[m	[32mint i, j, tamanho=5, aux=0, prioridade, estouro=0;[m
+[32m+[m	[32mProcesso fila[5];[m
+[32m+[m[41m	[m
+[32m+[m	[32mfila[0] = novo_processo(1, 4, "C");[m
+[32m+[m	[32mfila[1] = novo_processo(2, 6, "I");[m
+[32m+[m	[32mfila[2] = novo_processo(1, 4, "C");[m
+[32m+[m	[32mfila[3] = novo_processo(3, 6, "C");[m
+[32m+[m	[32mfila[4] = novo_processo(2, 6, "I");[m
+[32m+[m[41m	[m
+[32m+[m	[32mwhile(estouro != 5){[m
+[32m+[m		[32mprioridade = 0;[m
+[32m+[m		[32mfor(j=0; j<5; j++){[m
+[32m+[m			[32mif(fila[j].prioridade > prioridade && fila[j].tempo != 0 && aux != j){[m
+[32m+[m				[32maux = j;[m
+[32m+[m				[32mprioridade = fila[aux].prioridade;[m
+[32m+[m			[32m}[m
+[32m+[m		[32m}[m
+[32m+[m		[32mprintf("Executando processo [%i]...\n", aux);[m
+[32m+[m[41m		[m
+[32m+[m		[32mif(fila[aux].tempo >= 2){[m
+[32m+[m			[32mfila[aux].tempo-= 2;[m
+[32m+[m			[32mprintf("Execucao concluida, tempo de execucao restante: %i\n\n", fila[aux].tempo);[m
+[32m+[m		[32m}else{[m
+[32m+[m			[32mfila[aux].tempo --;[m
+[32m+[m		[32m}[m
+[32m+[m[41m		[m
+[32m+[m		[32mif(fila[aux].tempo == 0){[m
+[32m+[m			[32mestouro++;[m
+[32m+[m			[32mprintf("Processo [%i] concluido\n\n", aux);[m
+[32m+[m		[32m}[m[41m	[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mprintf("Nao ha mais processos em fila! Finalizando...\n");[m[41m	[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m[32mProcesso novo_processo(int prioridade, int tempo, char tipo[1]){[m
+[32m+[m	[32mProcesso processo;[m
+[32m+[m	[32mprocesso.tempo = tempo;[m
+[32m+[m	[32mprocesso.tipo[0] = tipo[0];[m
+[32m+[m	[32mif(tipo[0] == 'C'){[m
+[32m+[m		[32mprocesso.prioridade = prioridade * 3;[m
+[32m+[m	[32m}else{[m
+[32m+[m		[32mprocesso.prioridade = prioridade;[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mreturn processo;[m
+[32m+[m[32m}[m
