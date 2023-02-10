@@ -74,7 +74,7 @@ int main(){
 		alterar_prioridades(&lista_prontos, &fila_de_espera);
 
 
-		printf("Digite 'p' para parar ou enter para continuar a execucao");
+		printf("Digite 'p' para parar ou enter para continuar a execucao\t");
 		scanf("%c", &escolha);
 		system("cls");
 	}while(escolha != 'p');
