@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #include <time.h>
 
 typedef struct{
@@ -23,6 +24,8 @@ void listar_em_espera(No *no);
 No *remover_da_fila(No **fila);
 No *remover_da_lista(No **lista);
 
+int tamanho(No *no);
+
 void alterar_prioridades(No **lista, No **fila);
 
 Processo criar_processo(char tipo, int tempo);
@@ -30,7 +33,6 @@ Processo criar_processo(char tipo, int tempo);
 int main(){
 	srand(time(NULL));
 	No *exe, *r, *lista_prontos = NULL, *fila_de_espera = NULL;
-	char escolha;
 	
 	Processo p1 = criar_processo('C', 2);
 	Processo p2 = criar_processo('I', 4);
@@ -48,9 +50,12 @@ int main(){
 	
 	
 	do{
-		r = remover_da_fila(&fila_de_espera);
-		if(r)
-			inserir_na_lista(&lista_prontos, r->processo);
+		if(fila_de_espera && fila_de_espera->processo.tempo == 0){
+			r = remover_da_fila(&fila_de_espera);
+			if(r)
+				inserir_na_lista(&lista_prontos, r->processo);
+		}
+			
 		
 		exe = remover_da_lista(&lista_prontos);
 		printf("Em execucao: Processo [%i]\tTipo: %c\tPrioridade: %i\n\n", exe->processo.id, exe->processo.tipo, exe->processo.prioridade);
@@ -58,7 +63,7 @@ int main(){
 		listar_prontos(lista_prontos);
 		listar_em_espera(fila_de_espera);
 				
-		getch();
+		Sleep(200);
 		system("cls");
 		
 		printf("Em execucao: Processo [ ]\tTipo: \n\n");
@@ -74,10 +79,10 @@ int main(){
 		alterar_prioridades(&lista_prontos, &fila_de_espera);
 
 
-		printf("Digite 'p' para parar ou enter para continuar a execucao\t");
-		scanf("%c", &escolha);
+		Sleep(1000);
 		system("cls");
-	}while(escolha != 'p');
+
+	}while(1);
 	
 	return 0;
 }
@@ -97,6 +102,7 @@ Processo criar_processo(char tipo, int tempo){
 void inserir_na_fila(No **fila, Processo processo){
 	No *aux, *novo = malloc(sizeof(No));
 	
+	processo.tempo = 3;
 	if(novo){
 		novo->processo = processo;
 		novo->proximo = NULL;
@@ -148,7 +154,7 @@ void listar_prontos(No *no){
 void listar_em_espera(No *no){	
 	printf("\n\n\n\tEm espera:\n");
 	while(no){
-		printf("\t\tProcesso [%i]\tTipo: %c", no->processo.id, no->processo.tipo);
+		printf("\t\tProcesso [%i]\tTipo: %c\n", no->processo.id, no->processo.tipo);
 		no = no->proximo;
 	}
 	printf("\n\n\n");
@@ -174,15 +180,30 @@ No *remover_da_lista(No **lista){
 	return remover;	
 }
 
+int tamanho(No *no){
+	int len=0;
+	while(no){
+		len++;
+		no = no->proximo;
+	}
+	return len;
+}
+
 void alterar_prioridades(No **lista, No **fila){
 	No *aux = *lista, *aux1 = *fila;
+	int sorteio = rand()%tamanho(*lista), iterador=0;
+
 	
 	while(aux){
-		aux->processo.prioridade = 1+(rand()%5);
+		if(iterador == sorteio)
+			aux->processo.prioridade = 1+(rand()%5);
+		iterador++;
 		aux = aux->proximo;
 	}
 	
 	while(aux1){
+		if(aux1->processo.tempo != 0) // Se o tempo restante na fila não for 0, decresce um segundo de espera
+			aux1->processo.tempo--;
 		aux1->processo.prioridade = 1+(rand()%5);
 		aux1 = aux1->proximo;
 	}
