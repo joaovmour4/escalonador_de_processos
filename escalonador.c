@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <time.h>
+#include <conio.h>
 
 typedef struct{
 	int id;
 	char tipo;
-	int prioridade;
+	int prioridade_estatica;
+	int prioridade_dinamica;
 	int tempo;
 }Processo;
 
@@ -58,7 +60,10 @@ int main(){
 			
 		
 		exe = remover_da_lista(&lista_prontos);
-		printf("Em execucao: Processo [%i]\tTipo: %c\tPrioridade: %i\n\n", exe->processo.id, exe->processo.tipo, exe->processo.prioridade);
+
+		alterar_prioridades(&lista_prontos, &fila_de_espera);
+
+		printf("Em execucao: Processo [%i]\tTipo: %c\tPrioridade: %i\n\n", exe->processo.id, exe->processo.tipo, exe->processo.prioridade_dinamica);
 		
 		listar_prontos(lista_prontos);
 		listar_em_espera(fila_de_espera);
@@ -76,12 +81,10 @@ int main(){
 		listar_prontos(lista_prontos);
 		listar_em_espera(fila_de_espera);
 		
-		alterar_prioridades(&lista_prontos, &fila_de_espera);
-
 
 		Sleep(1000);
 		system("cls");
-
+		
 	}while(1);
 	
 	return 0;
@@ -92,7 +95,8 @@ Processo criar_processo(char tipo, int tempo){
 	Processo processo;
 	processo.id = rand()%100;
 	processo.tipo = tipo;
-	processo.prioridade = 1 + (rand()%5);
+	processo.prioridade_estatica = 1 + (rand()%5);
+	processo.prioridade_dinamica = processo.prioridade_estatica;
 	processo.tempo = tempo;
 	
 	return processo;
@@ -123,18 +127,19 @@ void inserir_na_fila(No **fila, Processo processo){
 
 void inserir_na_lista(No **lista, Processo processo){
 	No *aux, *novo = malloc(sizeof(No));
+	processo.prioridade_dinamica = processo.prioridade_estatica; // Reseta a prioridade do processo
 	
 	if(novo){
 		novo->processo = processo;
 		if(*lista == NULL){
 			novo->proximo = NULL;
 			*lista = novo;
-		}else if(novo->processo.prioridade > (*lista)->processo.prioridade){
+		}else if(novo->processo.prioridade_dinamica > (*lista)->processo.prioridade_dinamica){
 			novo->proximo = *lista;
 			*lista = novo;
 		}else{
 			aux = *lista;
-			while(aux->proximo && novo->processo.prioridade < aux->proximo->processo.prioridade)
+			while(aux->proximo && novo->processo.prioridade_dinamica < aux->proximo->processo.prioridade_dinamica)
 				aux = aux->proximo;
 			novo->proximo = aux->proximo;
 			aux->proximo = novo;
@@ -146,7 +151,7 @@ void inserir_na_lista(No **lista, Processo processo){
 void listar_prontos(No *no){
 	printf("\tProntos:\n");
 	while(no){
-		printf("\t\tProcesso [%i]\tTipo: %c\tPrioridade: %i\n", no->processo.id, no->processo.tipo, no->processo.prioridade);
+		printf("\t\tProcesso [%i]\tTipo: %c\tPrioridade: %i\n", no->processo.id, no->processo.tipo, no->processo.prioridade_dinamica);
 		no = no->proximo;
 	}
 }
@@ -191,20 +196,15 @@ int tamanho(No *no){
 
 void alterar_prioridades(No **lista, No **fila){
 	No *aux = *lista, *aux1 = *fila;
-	int sorteio = rand()%tamanho(*lista), iterador=0;
-
 	
 	while(aux){
-		if(iterador == sorteio)
-			aux->processo.prioridade = 1+(rand()%5);
-		iterador++;
+		aux->processo.prioridade_dinamica++;
 		aux = aux->proximo;
 	}
 	
 	while(aux1){
 		if(aux1->processo.tempo != 0) // Se o tempo restante na fila não for 0, decresce um segundo de espera
 			aux1->processo.tempo--;
-		aux1->processo.prioridade = 1+(rand()%5);
 		aux1 = aux1->proximo;
 	}
 }
