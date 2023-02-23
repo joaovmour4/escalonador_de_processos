@@ -30,25 +30,18 @@ int tamanho(No *no);
 
 void alterar_prioridades(No **lista, No **fila);
 
-Processo criar_processo(char tipo, int tempo);
+Processo criar_processo(char tipo);
 
 int main(){
 	srand(time(NULL));
 	No *exe, *r, *lista_prontos = NULL, *fila_de_espera = NULL;
 	
-	Processo p1 = criar_processo('C', 2);
-	Processo p2 = criar_processo('I', 4);
-	Processo p3 = criar_processo('C', 2);
-	Processo p4 = criar_processo('I', 4);
-	Processo p5 = criar_processo('C', 2);
-	Processo p6 = criar_processo('I', 4);
-	
-	inserir_na_lista(&lista_prontos, p1);
-	inserir_na_lista(&lista_prontos, p2);
-	inserir_na_lista(&lista_prontos, p3);
-	inserir_na_lista(&lista_prontos, p4);
-	inserir_na_lista(&lista_prontos, p5);
-	inserir_na_lista(&lista_prontos, p6);
+	inserir_na_lista(&lista_prontos, criar_processo('C'));
+	inserir_na_lista(&lista_prontos, criar_processo('I'));
+	inserir_na_lista(&lista_prontos, criar_processo('C'));
+	inserir_na_lista(&lista_prontos, criar_processo('I'));
+	inserir_na_lista(&lista_prontos, criar_processo('C'));
+	inserir_na_lista(&lista_prontos, criar_processo('I'));
 	
 	
 	do{
@@ -91,13 +84,13 @@ int main(){
 }
 
 
-Processo criar_processo(char tipo, int tempo){
+Processo criar_processo(char tipo){
 	Processo processo;
 	processo.id = rand()%100;
 	processo.tipo = tipo;
 	processo.prioridade_estatica = 1 + (rand()%5);
 	processo.prioridade_dinamica = processo.prioridade_estatica;
-	processo.tempo = tempo;
+	processo.tempo = 3;
 	
 	return processo;
 }
